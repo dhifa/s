@@ -8,32 +8,36 @@
 import LINETCR
 from LINETCR.lib.curve.ttypes import *
 from datetime import datetime
-import time,random,sys,json,codecs,threading,glob,re,os,subprocess
+import time,random,sys,json,codecs,threading,glob,re,os,subprocess,wikipedia
 
 cl = LINETCR.LINE() #Luffy
-cl.login(token='ISI TOKEN KAMU')
+cl.login(token='ErgXXV25vgB25pq3ITE7.85+cU2K5RGQ18cg8fioLfW.etlaMdrRd2oVrmjpdWviudDQxtOagJH9kmQLA14L3DU=')
 cl.loginResult()
 
-print "login Bot Ferians Succes"
+print "login Bot OSIS Succes"
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 helpMessage ="""-==================-
-     Ferians Bot Sider
+     BOT OSIS MAN 2 BDG 
 -==================-
 [•]Cctv [Start Check Sider]
 [•]Ciduk [Liat Hasil Sider]
 [•]Creator [Melihat Creator Bot]
 [•]@bye/Bot out [Untuk Keluarkan Bot]
+[•]mention [tag semua anggota]
+[•]apakah ....[untuk lucu lucuan c/ apakah saya pintar]
+[•]instagram (usernamemu) [untuk promo IG]
+[•]wikipedia (apa yg di cari) [untuk search di wikipedia]
 -==================-
-    By Ferians Bot 
+    By OSIS MAN2BDG 
 -==================-
 """
 KAC=[cl]
 mid = cl.getProfile().mid 
 
 Bots=[mid]
-owner=["u7cd68a1bc3cfa0ae3fcdb7907e4d307d"]
+owner=["u7e96d3b3f5b37ccffbebd18aa343e5f3"]
 wait = {
     'contact':False,
     'autoJoin':True,
@@ -94,6 +98,18 @@ def bot(op):
                     pass
                 else:
                     cl.sendText(op.param1,str(wait["message"]))
+def sendAudioWithURL(self, to_, url):
+      path = '%s/pythonLine-%i.data' % (tempfile.gettempdir(), randint(0, 9))
+      r = requests.get(url, stream=True)
+      if r.status_code == 200:
+         with open(path, 'w') as f:
+            shutil.copyfileobj(r.raw, f)
+      else:
+         raise Exception('Download audio failure.')
+      try:
+         self.sendAudio(to_, path)
+      except Exception as e:
+            raise e
         if op.type == 13:
             cl.acceptGroupInvitation(op.param1)
             cl.sendText(op.param1, "Ketik Help Untuk Liat Menu")
@@ -373,6 +389,27 @@ def bot(op):
                     cl.updateProfile(profile)
                     cl.sendText(msg.to,"Bio berubah menjadi " + string + "")
     #--------------=Finish=----------------
+	    elif 'instagram ' in msg.text.lower():
+                try:
+                    instagram = msg.text.lower().replace("instagram ","")
+                    html = requests.get('https://www.instagram.com/' + instagram + '/?')
+                    soup = BeautifulSoup(html.text, 'html5lib')
+                    data = soup.find_all('meta', attrs={'property':'og:description'})
+                    text = data[0].get('content').split()
+                    data1 = soup.find_all('meta', attrs={'property':'og:image'})
+                    text1 = data1[0].get('content').split()
+                    user = "Name: " + text[-2] + "\n"
+                    user1 = "Username: " + text[-1] + "\n"
+                    followers = "Followers: " + text[0] + "\n"
+                    following = "Following: " + text[2] + "\n"
+                    post = "Post: " + text[4] + "\n"
+                    link = "Link: " + "https://www.instagram.com/" + instagram
+                    detail = "**INSTAGRAM INFO USER**\n"
+                    details = "\n**INSTAGRAM INFO USER**"
+                    cl.sendText(msg.to, detail + user + user1 + followers + following + post + link + details)
+                    cl.sendImageWithURL(msg.to, text1[0])
+                except Exception as njer:
+                	cl.sendText(msg.to, str(njer))
     #--------------= SC Ganti nama Owner=--------------
             elif "Myname:" in msg.text:
               if msg.from_ in owner:
@@ -611,7 +648,7 @@ def bot(op):
                                 #print rom
                                 chiya += rom[1] + "\n"
 
-                        cl.sendText(msg.to, "|Readers||%s\n\n\n||Ignored||\n%s\n||Bot By Ferians||\n\n[%s]" % (wait2['readMember'][msg.to],chiya,setTime[msg.to]))
+                        cl.sendText(msg.to, "|Readers||%s\n\n\n||Ignored||\n%s\n||Bot By OSIS MAN2BDG||\n\n[%s]" % (wait2['readMember'][msg.to],chiya,setTime[msg.to]))
                     else:
                         cl.sendText(msg.to, "Ketik Cctv dulu Sayang♥\nBaru Ketik Ciduk ♥")
 						
@@ -636,11 +673,70 @@ def bot(op):
                 else:
                   cl.sendText(msg.to,"He declined all invitations")
     #---------------------------------------------#
-
+ 	    elif "mention" == msg.text.lower():
+                 group = cl.getGroup(msg.to)
+                 nama = [contact.mid for contact in group.members]
+                 nm1, nm2, nm3, nm4, nm5, jml = [], [], [], [], [], len(nama)
+                 if jml <= 100:
+                    summon(msg.to, nama)
+                 if jml > 100 and jml < 200:
+                    for i in range(0, 99):
+                        nm1 += [nama[i]]
+                    summon(msg.to, nm1)
+                    for j in range(100, len(nama)-1):
+                        nm2 += [nama[j]]
+                    summon(msg.to, nm2)
+                 if jml > 200  and jml < 500:
+                    for i in range(0, 99):
+                        nm1 += [nama[i]]
+                    summon(msg.to, nm1)
+                    for j in range(100, 199):
+                        nm2 += [nama[j]]
+                    summon(msg.to, nm2)
+                    for k in range(200, 299):
+                        nm3 += [nama[k]]
+                    summon(msg.to, nm3)
+                    for l in range(300, 399):
+                        nm4 += [nama[l]]
+                    summon(msg.to, nm4)
+                    for m in range(400, len(nama)-1):
+                        nm5 += [nama[m]]
+                    summon(msg.to, nm5)
+                 if jml > 500:
+                     print "Terlalu Banyak Men 500+"
+                 cnt = Message()
+                 cnt.text = "Jumlah:\n" + str(jml) +  " Members"
+                 cnt.to = msg.to
+                 cl.sendMessage(cnt)
+            elif "Apakah " in msg.text:
+                  tanya = msg.text.replace("Apakah ","")
+                  jawab = ("Ya","Tidak","Mungkin","Bisa jadi")
+                  jawaban = random.choice(jawab)
+                  tts = gTTS(text=jawaban, lang='id')
+                  tts.save('tts.mp3')
+                  cl.sendAudio(msg.to,'tts.mp3')
+	    elif "Wikipedia " in msg.text:
+                  try:
+                      wiki = msg.text.lower().replace("Wikipedia ","")
+                      wikipedia.set_lang("id")
+                      pesan="Title ("
+                      pesan+=wikipedia.page(wiki).title
+                      pesan+=")\n\n"
+                      pesan+=wikipedia.summary(wiki, sentences=1)
+                      pesan+="\n"
+                      pesan+=wikipedia.page(wiki).url
+                      cl.sendText(msg.to, pesan)
+                  except:
+                          try:
+                              pesan="Over Text Limit! Please Click link\n"
+                              pesan+=wikipedia.page(wiki).url
+                              cl.sendText(msg.to, pesan)
+                          except Exception as e:
+                              cl.sendText(msg.to, str(e))
       #-------------Creator------------------#
             elif msg.text in ["Creator"]:
               msg.contentType = 13
-              msg.contentMetadata = {'mid': 'u7cd68a1bc3cfa0ae3fcdb7907e4d307d'}
+              msg.contentMetadata = {'mid': 'u7e96d3b3f5b37ccffbebd18aa343e5f3'}
               cl.sendMessage(msg)
               cl.sendText(msg.to,"Itu Kak Creator Bot Kami")
       #-------------Finish----------------#
