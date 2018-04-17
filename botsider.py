@@ -8,7 +8,13 @@
 import LINETCR
 from LINETCR.lib.curve.ttypes import *
 from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
 import time,random,sys,json,codecs,threading,glob,re,os,subprocess,wikipedia
+from threading import Thread
+from gtts import gTTS
+import urllib3
+
 
 cl = LINETCR.LINE() #Luffy
 cl.login(token='ErgXXV25vgB25pq3ITE7.85+cU2K5RGQ18cg8fioLfW.etlaMdrRd2oVrmjpdWviudDQxtOagJH9kmQLA14L3DU=')
@@ -25,7 +31,7 @@ helpMessage ="""-==================-
 [•]Ciduk [Liat Hasil Sider]
 [•]Creator [Melihat Creator Bot]
 [•]@bye/Bot out [Untuk Keluarkan Bot]
-[•]mention [tag semua anggota]
+[•]tagall [tag semua anggota]
 [•]apakah ....[untuk lucu lucuan c/ apakah saya pintar]
 [•]instagram (usernamemu) [untuk promo IG]
 [•]wikipedia (apa yg di cari) [untuk search di wikipedia]
@@ -86,18 +92,40 @@ def sendMessage(to, text, contentMetadata={}, contentType=0):
     if to not in messageReq:
         messageReq[to] = -1
     messageReq[to] += 1
-
-def bot(op):
+def sendImageWithURL(self, to_, url):
+      path = '%s/pythonLine-%i.data' % (tempfile.gettempdir(), randint(0, 9))
+      r = requests.get(url, stream=True)
+      if r.status_code == 200:
+         with open(path, 'w') as f:
+            shutil.copyfileobj(r.raw, f)
+      else:
+         raise Exception('Download image failure.')
+      try:
+         self.sendImage(to_, path)
+      except Exception as e:
+         raise e
+def mention(to, nama):
+    aa = ""
+    bb = ""
+    strt = int(14)
+    akh = int(14)
+    nm = nama
+    for mm in nm:
+      akh = akh + 2
+      aa += """{"S":"""+json.dumps(str(strt))+""","E":"""+json.dumps(str(akh))+""","M":"""+json.dumps(mm)+"},"""
+      strt = strt + 6
+      akh = akh + 4
+      bb += "\xe2\x95\xa0 @x \n"
+    aa = (aa[:int(len(aa)-1)])
+    msg = Message()
+    msg.to = to
+    msg.text = "\xe2\x95\x94\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\n"+bb+"\xe2\x95\x9a\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90"
+    msg.contentMetadata ={'MENTION':'{"MENTIONEES":['+aa+']}','EMTVER':'4'}
+    print "[Command] Tag All"
     try:
-        if op.type == 0:
-            return
-        if op.type == 5:
-            if wait["autoAdd"] == True:
-                cl.findAndAddContactsByMid(op.param1)
-                if (wait["message"] in [""," ","\n",None]):
-                    pass
-                else:
-                    cl.sendText(op.param1,str(wait["message"]))
+       cl.sendMessage(msg)
+    except Exception as error:
+       print error
 def sendAudioWithURL(self, to_, url):
       path = '%s/pythonLine-%i.data' % (tempfile.gettempdir(), randint(0, 9))
       r = requests.get(url, stream=True)
@@ -110,6 +138,17 @@ def sendAudioWithURL(self, to_, url):
          self.sendAudio(to_, path)
       except Exception as e:
             raise e
+def bot(op):
+    try:
+        if op.type == 0:
+            return
+        if op.type == 5:
+            if wait["autoAdd"] == True:
+                cl.findAndAddContactsByMid(op.param1)
+                if (wait["message"] in [""," ","\n",None]):
+                    pass
+                else:
+                    cl.sendText(op.param1,str(wait["message"]))
         if op.type == 13:
             cl.acceptGroupInvitation(op.param1)
             cl.sendText(op.param1, "Ketik Help Untuk Liat Menu")
@@ -134,6 +173,8 @@ def sendAudioWithURL(self, to_, url):
                   Z = random.choice(KAC).getGroup(op.param1)
                   Z.preventJoinByTicket = True
                   random.choice(KAC).updateGroup(Z)
+		
+		
         #------Protect Group Kick finish-----#
 
         #------Cancel Invite User start------#
@@ -354,6 +395,68 @@ def sendAudioWithURL(self, to_, url):
                   cl.sendText(msg.to,mc)
                   print "[Command]Stafflist executed"
     #--------------------------------------
+            elif msg.text in ["Speed","Sp"]:
+              if msg.from_ in owner:
+                start = time.time()
+                cl.sendText(msg.to, "Wait...")
+                elapsed_time = time.time() - start
+                cl.sendText(msg.to, "%sDetik" % (elapsed_time))
+            elif "Steal cover @" in msg.text:
+              if msg.from_ in admin:            
+                print "[Command]dp executing"
+                _name = msg.text.replace("Steal cover @","")
+                _nametarget = _name.rstrip('  ')
+                gs = cl.getGroup(msg.to)
+                targets = []
+                for g in gs.members:
+                    if _nametarget == g.displayName:
+                        targets.append(g.mid)
+                if targets == []:
+                    cl.sendText(msg.to,"Contact not found")
+                else:
+                    for target in targets:
+                        try:
+                            contact = cl.getContact(target)
+                            cu = cl.channel.getCover(target)
+                            path = str(cu)
+                            cl.sendImageWithURL(msg.to, path)
+                        except:
+                            pass
+                print "[Command]dp executed"
+            elif "Steal pict " in msg.text:
+              if msg.from_ in admin:
+                if msg.toType == 2:
+                    msg.contentType = 0
+                    steal0 = msg.text.replace("Steal pict ","")
+                    steal1 = steal0.lstrip()
+                    steal2 = steal1.replace("@","")
+                    steal3 = steal2.rstrip()
+                    _name = steal3
+                    group = cl.getGroup(msg.to)
+                    targets = []
+                    for g in group.members:
+                        if _name == g.displayName:
+                            targets.append(g.mid)
+                    if targets == []:
+                        cl.sendText(msg.to,"not found")
+                    else:
+                        for target in targets:
+                            try:
+                                contact = cl.getContact(target)
+                                try:
+                                    image = "http://dl.profile.line-cdn.net/" + contact.pictureStatus
+                                except:
+                                    image = "https://www.1and1.co.uk/digitalguide/fileadmin/DigitalGuide/Teaser/not-found-t.jpg"
+                                try:
+                                    cl.sendImageWithURL(msg.to,image)
+                                except Exception as error:
+                                    cl.sendText(msg.to,(error))
+                                    pass
+                            except:
+                                cl.sendText(msg.to,"Error!")
+                                break
+                else:
+                    cl.sendText(msg.to,"Tidak bisa dilakukan di luar grup")
     #-------------- Add Friends ------------
             elif "Bot Add @" in msg.text:
               if msg.toType == 2:
@@ -673,41 +776,35 @@ def sendAudioWithURL(self, to_, url):
                 else:
                   cl.sendText(msg.to,"He declined all invitations")
     #---------------------------------------------#
- 	    elif "mention" == msg.text.lower():
-                 group = cl.getGroup(msg.to)
-                 nama = [contact.mid for contact in group.members]
-                 nm1, nm2, nm3, nm4, nm5, jml = [], [], [], [], [], len(nama)
-                 if jml <= 100:
-                    summon(msg.to, nama)
-                 if jml > 100 and jml < 200:
-                    for i in range(0, 99):
-                        nm1 += [nama[i]]
-                    summon(msg.to, nm1)
-                    for j in range(100, len(nama)-1):
-                        nm2 += [nama[j]]
-                    summon(msg.to, nm2)
-                 if jml > 200  and jml < 500:
-                    for i in range(0, 99):
-                        nm1 += [nama[i]]
-                    summon(msg.to, nm1)
-                    for j in range(100, 199):
-                        nm2 += [nama[j]]
-                    summon(msg.to, nm2)
-                    for k in range(200, 299):
-                        nm3 += [nama[k]]
-                    summon(msg.to, nm3)
-                    for l in range(300, 399):
-                        nm4 += [nama[l]]
-                    summon(msg.to, nm4)
-                    for m in range(400, len(nama)-1):
-                        nm5 += [nama[m]]
-                    summon(msg.to, nm5)
-                 if jml > 500:
-                     print "Terlalu Banyak Men 500+"
-                 cnt = Message()
-                 cnt.text = "Jumlah:\n" + str(jml) +  " Members"
-                 cnt.to = msg.to
-                 cl.sendMessage(cnt)
+ 	    #-------------Fungsi Tag All Start---------------#
+            elif msg.text in ["Tag all","Tagall"]:
+                 if msg.from_ in admin:
+                  group = cl.getGroup(msg.to)
+                  nama = [contact.mid for contact in group.members]
+
+                  cb = ""
+                  cb2 = ""
+                  strt = int(0)
+                  akh = int(0)
+                  for md in nama:
+                      akh = akh + int(6)
+
+                      cb += """{"S":"""+json.dumps(str(strt))+""","E":"""+json.dumps(str($
+
+                      strt = strt + int(7)
+                      akh = akh + 1
+                      cb2 += "@nrik \n"
+
+                  cb = (cb[:int(len(cb)-1)])
+                  msg.contentType = 0
+                  msg.text = cb2
+                  msg.contentMetadata ={'MENTION':'{"MENTIONEES":['+cb+']}','EMTVER':'4'}
+
+                  try:
+                      cl.sendMessage(msg)
+                  except Exception as error:
+                      print error
+    #-------------Fungsi Tag All Finish---------------#                
             elif "Apakah " in msg.text:
                   tanya = msg.text.replace("Apakah ","")
                   jawab = ("Ya","Tidak","Mungkin","Bisa jadi")
