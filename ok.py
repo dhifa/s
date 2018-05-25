@@ -332,7 +332,30 @@ def bot(op):
                 midd = msg.text.replace("Invite ","")
                 cl.findAndAddContactsByMid(midd)
                 cl.inviteIntoGroup(msg.to,[midd])
-            
+  
+#-----------------BATAS WILAYAH KEKUASAAN-----------------#
+            if msg.text in ["Tagall","tagall","Tag all","tag all"]:
+                            group = cl.getGroup(msg.to)
+                            nama = [contact.mid for contact in group.members]
+                            cb = ""
+                            cb2 = ""
+                            strt = int(0)
+                            akh = int(0)
+                            for md in nama:
+                                akh = akh + int(6)
+                                cb += """{"S":"""+json.dumps(str(strt))+""","E":"""+json.dumps(str(akh))+""","M":"""+json.$
+                                strt = strt + int(7)
+                                akh = akh + 1
+                                cb2 += "@nrik \n"
+                            cb = (cb[:int(len(cb)-1)])
+                            msg.contentType = 0
+                            msg.text = cb2
+                            msg.contentMetadata ={'MENTION':'{"MENTIONEES":['+cb+']}','EMTVER':'4'}
+                            try:
+                                kc.sendMessage(msg)
+                            except Exception as error:
+                                print error
+#-----------------BATAS WILAYAH KEKUASAAN------------------#
     #--------------- SC Add Admin ---------
             elif "Admin add @" in msg.text:
               if msg.from_ in owner:
